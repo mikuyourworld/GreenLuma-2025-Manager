@@ -198,16 +198,39 @@ def get_config():
     finally:
         config.export_config()
 
+def get_exe_dir():
+    """Best-effort directory of the running app.
+
+    - PyInstaller: sys.executable is the .exe path.
+    - Dev mode: use this file's directory.
+    """
+    try:
+        if getattr(sys, 'frozen', False):
+            return os.path.dirname(sys.executable)
+    except Exception:
+        pass
+    return os.path.dirname(os.path.abspath(__file__))
+
+
 def createFiles(games):
-    if not os.path.exists("{}/AppList".format(config.greenluma_path)):
-        os.makedirs("{}/AppList".format(config.greenluma_path))
-    else:
-        shutil.rmtree("{}/AppList".format(config.greenluma_path))
-        time.sleep(0.5)
-        os.makedirs("{}/AppList".format(config.greenluma_path))
+    """Generate GreenLuma AppList files.
+
+    NOTE: Always write AppList next to the executable (portable behavior).
+    Do NOT use config.greenluma_path here because it may point to an arbitrary
+    Steam/GreenLuma install folder or even a drive root depending on how the
+    path was selected.
+    """
+    base_dir = get_exe_dir()
+    app_list_dir = os.path.join(base_dir, "AppList")
+
+    if os.path.exists(app_list_dir):
+        shutil.rmtree(app_list_dir)
+        time.sleep(0.2)
+
+    os.makedirs(app_list_dir, exist_ok=True)
 
     for i in range(len(games)):
-        with open("{}/AppList/{}.txt".format(config.greenluma_path, i), "w") as file:
+        with open(os.path.join(app_list_dir, f"{i}.txt"), "w", encoding="utf-8") as file:
             file.write(games[i].id)
 
 def parseSteamDB(html):

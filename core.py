@@ -13,8 +13,23 @@ from bs4 import BeautifulSoup as parser
 from requests.exceptions import ConnectionError, ConnectTimeout
 from cloudscraper.exceptions import CloudflareException, CaptchaException
 
-BASE_PATH = "{}/GLR_Manager".format(os.getenv("LOCALAPPDATA"))
-PROFILES_PATH = "{}/Profiles".format(BASE_PATH)
+def get_portable_base_path():
+    """Return a writable base path for config/profiles.
+
+    Portable mode: store everything next to the executable.
+    - In PyInstaller onefile/onedir, sys.executable points to the .exe path.
+    - In dev mode, fall back to this file's directory.
+    """
+    try:
+        if getattr(sys, 'frozen', False):
+            exe_dir = os.path.dirname(sys.executable)
+            return os.path.join(exe_dir, 'GLR_Manager')
+    except Exception:
+        pass
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'GLR_Manager')
+
+BASE_PATH = get_portable_base_path()
+PROFILES_PATH = os.path.join(BASE_PATH, 'Profiles')
 CURRENT_VERSION = "1.3.10"
 
 class Game:

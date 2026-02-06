@@ -25,10 +25,10 @@ jobs:
           python -m pip install -U pip setuptools wheel
           pip install -r requirements.txt
 
-      - name: Build with PyInstaller
+      - name: Build with PyInstaller (onefile, windowed)
         shell: pwsh
         run: |
-          pyinstaller --noconfirm --clean `
+          pyinstaller --noconfirm --clean --onefile --windowed `
             --name "GreenLuma-2025-Manager" `
             --icon "icon.ico" `
             --add-data "Qt;Qt" `
@@ -39,4 +39,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: GreenLuma-2025-Manager-windows
-          path: dist/GreenLuma-2025-Manager/**
+          path: dist/GreenLuma-2025-Manager.exe

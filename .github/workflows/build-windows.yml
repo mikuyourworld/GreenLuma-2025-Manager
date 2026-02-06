@@ -1,0 +1,42 @@
+name: Build Windows EXE
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.8"
+          cache: "pip"
+
+      - name: Install deps
+        shell: pwsh
+        run: |
+          python -m pip install -U pip setuptools wheel
+          pip install -r requirements.txt
+
+      - name: Build with PyInstaller
+        shell: pwsh
+        run: |
+          pyinstaller --noconfirm --clean `
+            --name "GreenLuma-2025-Manager" `
+            --icon "icon.ico" `
+            --add-data "Qt;Qt" `
+            --add-data "GLMUpdater;GLMUpdater" `
+            main.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GreenLuma-2025-Manager-windows
+          path: dist/GreenLuma-2025-Manager/**

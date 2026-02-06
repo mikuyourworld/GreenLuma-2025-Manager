@@ -69,8 +69,8 @@ class Profile:
 
     def export_profile(self, path=PROFILES_PATH):
         data = {"name": self.name, "games": [game.to_JSON() for game in self.games]}
-        with open("{}/{}.json".format(path, self.name), "w") as outfile:
-            json.dump(data, outfile, indent=4)
+        with open("{}/{}.json".format(path, self.name), "w", encoding="utf-8") as outfile:
+            json.dump(data, outfile, indent=4, ensure_ascii=False)
 
     def __eq__(self, value):
         return self.name == value.name
@@ -93,7 +93,7 @@ class ProfileManager:
 
         for filename in os.listdir(PROFILES_PATH):
             if os.path.splitext(filename)[1] == ".json":
-                with open("{}/{}".format(PROFILES_PATH, filename), "r") as file:
+                with open("{}/{}".format(PROFILES_PATH, filename), "r", encoding="utf-8") as file:
                     try:
                         data = json.load(file)
                         self.register_profile(Profile.from_JSON(data))
@@ -126,8 +126,8 @@ class Config:
         self.manager_msg = manager_msg
 
     def export_config(self):
-        with open("{}/config.json".format(BASE_PATH), "w") as outfile:
-            json.dump(vars(self), outfile, indent=4)
+        with open("{}/config.json".format(BASE_PATH), "w", encoding="utf-8") as outfile:
+            json.dump(vars(self), outfile, indent=4, ensure_ascii=False)
 
     @staticmethod
     def from_JSON(data):
@@ -151,7 +151,7 @@ class Config:
             config.export_config()
             return config
         else:
-            with open("{}/config.json".format(BASE_PATH), "r") as file_:
+            with open("{}/config.json".format(BASE_PATH), "r", encoding="utf-8") as file_:
                 try:
                     data = json.load(file_)
                     config = Config.from_JSON(data)

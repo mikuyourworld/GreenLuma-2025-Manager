@@ -5,3 +5,7 @@ PyInstaller==4.*
 PyQt5==5.*
 requests==2.*
 requests-toolbelt==0.*
+
+# urllib3 2.x removed urllib3.contrib.appengine; requests-toolbelt 0.x still imports it.
+# Pin urllib3 to 1.26.x to keep bundled EXE runtime working.
+urllib3==1.26.*
